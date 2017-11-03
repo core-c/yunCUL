@@ -1,0 +1,10 @@
+* Eerst yunCUL compileren op een Linux systeem m.b.v. gcc
+
+* Plug de Yun in de PC,
+  controleer op welke COM-poort de Yun zit
+  (ik check m.b.v. de Arduino IDE welke poort erbij is gekomen),
+  Pas de command-instructie aan.. en proggen die AVR.
+
+cd C:\Users\C\Desktop\yunCUL
+
+C:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9/bin/avrdude -CC:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9/etc/avrdude.conf -v -patmega32u4 -cavr109 -PCOM6 -b57600 -D -Uflash:w:yunCUL.hex:i -Ueeprom:w:yunCUL.eep:i
