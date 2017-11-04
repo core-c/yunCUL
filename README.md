@@ -2,25 +2,29 @@
 
 
 
-##Description
+####Description
 
 culfw for Arduino Yún.
 
 
 
+####Changes from the original culfw
+
+- Added code for a new device ***yunCUL*** to ***culfw-code-565-trunk/culfw/Devices/***
+- Adjusted ***culfw-code-565-trunk/culfw/clib/rf_send.h*** to get rid of the "not enough credits" bug
+- Adjusted ***culfw-code-565-trunk/culfw/clib/serial.c*** to use the Yún's _Serial1_ hardware COM-port instead of _Serial_
 
 
-
-##Compiling the code
+####Compiling the code
 
 You can compile the code on any Linux system. I even compiled it on a Yún with yun-gcc.
 If you successfully compiled the code, you need to flash the ***yunCUL.hex*** and ***yunCUL.eep*** files into the Yún's AVR.
 
-##Find out on what COM-port the Arduino Yún connects
+####Find out on what COM-port the Arduino Yún connects
 
 Simply use the Arduino IDE, and check what COM-port the Yún is reporting.
 
-##Flashing the files
+####Flashing the files
 
 - Open a command-prompt
 - Change to the folder containing the files: yunCUL.hex & yunCUL.eep
@@ -37,3 +41,8 @@ Simply use the Arduino IDE, and check what COM-port the Yún is reporting.
 
 
 
+####Links
+
+[The CUL homepage](https://wiki.fhem.de/wiki/CUL)
+[DIY](https://wiki.fhem.de/wiki/Selbstbau_CUL)
+[The culfw source code](https://sourceforge.net/p/culfw/code/HEAD/tarball)
