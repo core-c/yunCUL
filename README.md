@@ -31,13 +31,27 @@ Simply use the Arduino IDE, and check what COM-port the Yún is reporting.
 - Invoke avrdude to program the files into flash & EEPROM memory
 
 ```
-  cd C:\Users\C\Desktop\yunCUL
-  C:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9/bin/avrdude -CC:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9/etc/avrdude.conf -v -patmega32u4 -cavr109 -PCOM6 -b57600 -D -Uflash:w:yunCUL.hex:i -Ueeprom:w:yunCUL.eep:i
+
+        cd C:\Users\C\Desktop\yunCUL
+        C:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9/bin/avrdude -CC:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9/etc/avrdude.conf -v -patmega32u4 -cavr109 -PCOM6 -b57600 -D -Uflash:w:yunCUL.hex:i -Ueeprom:w:yunCUL.eep:i
+
 ```
 
 > Note that the above lines are just an example.
 > If you enable all the compiler verbose settings in the Arduino IDE preferences, and you upload _some_ sketch to your Yún, you can find out the exact paths of your own avrdude location.
 
+You can extend the ***PATH*** environment variable to include the avrdude folder.
+Here is an example using an Arduino Uno as ISP, to program the Yún:
+> Note: You need to set fuse- & lock bits to be able to flash to bootloader address-space
+
+```
+
+        set PATH=%PATH%;C:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9\bin
+        cd C:\Users\C\Desktop\yunCUL
+        avrdude -CC:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9/etc/avrdude.conf -v -patmega32u4 -cstk500v1 -PCOM7 -b19200 -e -Ulock:w:0x3F:m -Uefuse:w:0xfb:m -Uhfuse:w:0xd8:m -Ulfuse:w:0xff:m 
+        avrdude -CC:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9/etc/avrdude.conf -v -patmega32u4 -cstk500v1 -PCOM7 -b19200 -Uflash:w:yunCUL.hex:i -Ulock:w:0x2F:m
+
+```
 
 
 
