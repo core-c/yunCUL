@@ -21,6 +21,11 @@
 
 uint8_t led_mode = 2;   // Start blinking
 
+// The relais connected to the UJE yunCUL
+#ifdef HAS_YUN_RELAIS
+uint8_t yun_relais_state = 0; // relais off
+#endif
+
 #ifdef XLED
 #include "xled.h"
 #endif
@@ -174,6 +179,11 @@ eeprom_init(void)
      erb(EE_MAGIC_OFFSET+1) != VERSION_2)
        eeprom_factory_reset(0);
 
+// UJE: the relais connected to the yunCUL
+#ifdef HAS_YUN_RELAIS
+	yun_relais_state = erb(EE_YUN_RELAIS);
+#endif
+
   led_mode = erb(EE_LED);
 #ifdef XLED
   switch (led_mode) {
@@ -212,7 +222,10 @@ eeprom_factory_reset(char *in)
   ewb(EE_RF_ROUTER_ROUTER, 0);
   ewb(EE_REQBL, 0);
   ewb(EE_LED, 2);
-
+// UJE: the relais connected to the yunCUL
+#ifdef HAS_YUN_RELAIS
+	ewb(EE_YUN_RELAIS, 0); // relais off
+#endif
 #ifdef HAS_LCD
   ewb(EE_CONTRAST,   0x40);
   ewb(EE_BRIGHTNESS, 0x80);
@@ -265,6 +278,20 @@ ledfunc(char *in)
 
   ewb(EE_LED, led_mode);
 }
+
+
+// UJE: the relais connected to the yunCUL
+void
+yun_relais_func(char *in)
+{
+	fromhex(in+1, &yun_relais_state, 1);
+	if(yun_relais_state & 1)
+		YUN_RELAIS_ON();
+	else
+		YUN_RELAIS_OFF();
+	ewb(EE_YUN_RELAIS, yun_relais_state);
+}
+
 
 //////////////////////////////////////////////////
 // boot

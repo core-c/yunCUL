@@ -10,6 +10,9 @@ uint8_t erb(uint8_t *p);
 void dumpmem(uint8_t *addr, uint16_t len);
 
 void ledfunc(char *);
+#ifdef HAS_YUN_RELAIS
+void yun_relais_func(char *); // UJE: the relais connected to the yunCUL
+#endif
 void prepare_boot(char *);
 void version(char *);
 void do_wdt_enable(uint8_t t);
@@ -47,6 +50,8 @@ void do_wdt_enable(uint8_t t);
 # define EE_IP4_TCPLINK_PORT (EE_IP4_NTPSERVER+4)               // Offset x79
 # define EE_IP4_NTPOFFSET    (EE_IP4_TCPLINK_PORT+2)
 # define EE_ETH_LAST         (EE_IP4_NTPOFFSET+1)       // 
+#else
+# define EE_ETH_LAST          (EE_RF_ROUTER_ROUTER+1)
 #endif
 
 #ifdef HAS_LCD
@@ -65,9 +70,21 @@ void do_wdt_enable(uint8_t t);
 #ifdef HAS_FS
 # define EE_LOGENABLED        (EE_LCD_LAST)
 # define EE_FS_LAST           (EE_LOGENABLED+1)
+#else
+# define EE_FS_LAST				EE_LCD_LAST
 #endif
 
+// UJE: the relais connected to the yunCUL
+#ifdef HAS_YUN_RELAIS
+# define EE_YUN_RELAIS			EE_FS_LAST
+# define EE_YUN_RELAIS_LAST		(EE_YUN_RELAIS+1)
+#else
+# define EE_YUN_RELAIS_LAST		EE_FS_LAST
+#endif
 
 extern uint8_t led_mode;
+#ifdef HAS_YUN_RELAIS
+extern uint8_t yun_relais_state; // UJE: the relais connected to the yunCUL
+#endif
 
 #endif

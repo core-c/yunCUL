@@ -124,6 +124,9 @@ const PROGMEM t_fntab fntab[] = {
   { 'N', native_func },
 #endif
   { 'R', read_eeprom },
+#ifdef HAS_YUN_RELAIS
+  { 'S', yun_relais_func },
+#endif
   { 'T', fhtsend },
   { 't', gettime },
 #ifdef HAS_UNIROLL
@@ -152,11 +155,14 @@ const PROGMEM t_fntab fntab[] = {
 int
 main(void)
 {
+// UJE: the relais connected to the yunCUL
+#ifdef HAS_YUN_RELAIS
+	yun_relais_init();
+#endif
 
   // wait for u-boot to finish..
   // On an Arduino Yun this will last about 1.5 minute (90 seconds)
   // To be on the safe side, we wait 120 seconds..
-  // TODO: mimic the Yun-Bridge method
   led_init();
   for (int i=0; i<600; i++) {
     LED_ON();
