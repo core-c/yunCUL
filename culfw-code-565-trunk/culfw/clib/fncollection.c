@@ -181,7 +181,8 @@ eeprom_init(void)
 
 // UJE: the relais connected to the yunCUL
 #ifdef HAS_YUN_RELAIS
-	yun_relais_state = erb(EE_YUN_RELAIS);
+	//! The next line is commented out, because we do not want the relais to enable at startup
+	//yun_relais_state = erb(EE_YUN_RELAIS);
 #endif
 
   led_mode = erb(EE_LED);
