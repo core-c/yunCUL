@@ -69,6 +69,8 @@
 #include "rf_zwave.h"
 #endif
 
+// UJE: OLED
+#include "oled_ssd1306.h"
 
 
 #ifdef HAS_CC1100_433
@@ -159,6 +161,9 @@ main(void)
 #ifdef HAS_YUN_RELAIS
 	yun_relais_init();
 #endif
+
+	// UJE: OLED init and display splashscreen..
+	oled_init();
 
   // wait for u-boot to finish..
   // On an Arduino Yun this will last about 1.5 minute (90 seconds)
