@@ -375,7 +375,9 @@ void oled_display(void) {
 		i--;
 		i2c_stop();
 	}
-failure:
 	TWBR = twbrbackup;
+	return;
+failure:
 	i2c_stop();
+	TWBR = twbrbackup;
 }
