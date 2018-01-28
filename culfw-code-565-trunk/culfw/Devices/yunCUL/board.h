@@ -15,13 +15,23 @@
 #define SPI_SS					6
 #define SPI_MISO				3
 #define SPI_MOSI				2
-/* die aufgelötete gelbe LED ist an PB5/SCLK angeschlossen! */
 #define SPI_SCLK				1
 
 #define CC1100_CS_DDR			SPI_DDR
 #define CC1100_CS_PORT			SPI_PORT
 #define CC1100_CS_PIN			SPI_SS
 
+// UJE:
+// INFO: An "INT" can wake the AVR from sleep/power-down mode. A "PCINT" (Pin Change Interrupt) doesn't do that.
+// Is there any INT1 used by culfw??  Tx interrupt?? GDO0 of the radio is connected to the Yun, but i think, never used to INTerrupt..
+// We want to free the Yun pins that are dedicated to the hardware I2C (Arduino D2/D3, AVR PD1/PD0, I2C SDA/SCL)
+// The Yun offers a pin that supports INT.6 (it's pin: Arduino D7, AVR PE6).
+// We leave the GDO0 INT unused, but connect it to PD7 (for transmitting/Tx). *1
+// We connect GDO2 to PE6, and assign INT.6 for the Rx interrupt. *2
+// NOTE: AVR pin PE6 can have an input current of max. 20mA (10 mA is recommended). check power levels first..
+// NOTE: All we have to change is (again) in board.h (cool).. minimal changes needed.
+//
+// If this all works well, we have freed the designated hardware I2C pins.. Connect the I2C OLED(128x32).. 
 
 /* CC1101 GDO0 Tx / Temperature Sensor */
 #if 0
@@ -31,24 +41,41 @@
 #define CC1100_OUT_IN			PINC
 #define CCTEMP_MUX				CC1100_OUT_PIN
 #else
+/*=== *1 ===*/
+//#define CC1100_OUT_DDR			DDRD
+//#define CC1100_OUT_PORT			PORTD
+//#define CC1100_OUT_PIN			PD1
+//#define CC1100_OUT_IN			PIND
+//#define CCTEMP_MUX				CC1100_OUT_PIN
 #define CC1100_OUT_DDR			DDRD
 #define CC1100_OUT_PORT			PORTD
-#define CC1100_OUT_PIN			PD1
+#define CC1100_OUT_PIN			PD7
 #define CC1100_OUT_IN			PIND
 #define CCTEMP_MUX				CC1100_OUT_PIN
+/*=== /*1 ===*/
 #endif
 
 /* CC1101 GDO2 Rx Interrupt */
-#define CC1100_IN_DDR			DDRD
-#define CC1100_IN_PORT			PIND
-#define CC1100_IN_PIN			PD0
-#define CC1100_IN_IN			PIND
+/*=== *2 ===*/
+//#define CC1100_IN_DDR			DDRD
+//#define CC1100_IN_PORT			PIND
+//#define CC1100_IN_PIN			PD0
+//#define CC1100_IN_IN			PIND
+//#define CC1100_INT				INT0
+//#define CC1100_INTVECT			INT0_vect
+//#define CC1100_ISC				ISC00
+//#define CC1100_EICR				EICRA
+#define CC1100_IN_DDR			DDRE
+#define CC1100_IN_PORT			PINE
+#define CC1100_IN_PIN			PE6
+#define CC1100_IN_IN			PINE
+#define CC1100_INT				INT6
+#define CC1100_INTVECT			INT6_vect
+#define CC1100_ISC				ISC60
+#define CC1100_EICR				EICRB
+/*=== /*2 ===*/
 
-#define CC1100_INT				INT0
-#define CC1100_INTVECT			INT0_vect
-#define CC1100_ISC				ISC00
-#define CC1100_EICR				EICRA
-
+/* die aufgelötete gelbe LED ist an PB5/SCLK angeschlossen! */
 /* externe LED, on Yun digital pin 8*/
 #define LED_DDR					DDRB
 #define LED_PORT				PORTB
