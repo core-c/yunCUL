@@ -44,6 +44,9 @@
 #include "fht.h"
 #include "memory.h"
 
+// UJE: OLED
+#include "oled_ssd1306.h"
+
 #ifdef HAS_ASKSIN
 #include "rf_asksin.h"
 #endif
@@ -68,9 +71,6 @@
 #ifdef HAS_ZWAVE
 #include "rf_zwave.h"
 #endif
-
-// UJE: OLED
-#include "oled_ssd1306.h"
 
 
 #ifdef HAS_CC1100_433

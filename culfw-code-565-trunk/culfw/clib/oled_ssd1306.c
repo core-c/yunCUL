@@ -1,4 +1,5 @@
 
+#include <avr/pgmspace.h>
 #include "oled_ssd1306.h"
 #include "i2cmaster.h"
 
@@ -366,7 +367,7 @@ void oled_display(void) {
 		result = i2c_write(data);
 		if (result!=0) goto failure;
 		for (uint8_t x=0; x<16; x++) {
-			data = buffer[i];
+			data = oled_buffer[i];
 			result = i2c_write(data);
 			if (result!=0) goto failure;
 			i++;

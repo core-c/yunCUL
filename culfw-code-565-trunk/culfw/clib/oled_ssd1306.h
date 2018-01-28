@@ -1,6 +1,3 @@
-#ifndef OLED_SSD1306_H
-#define OLED_SSD1306_H
-
 #define SSD1306_I2C_ADDRESS	0x3C
 #define SSD1306_LCDWIDTH	128
 #define SSD1306_LCDHEIGHT	32
@@ -44,5 +41,3 @@
 void oled_init(void);
 void ssd1306_command(uint8_t c);
 void oled_display(void);
-
-#endif
