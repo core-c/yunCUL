@@ -1,6 +1,7 @@
-#define SSD1306_I2C_ADDRESS	0x3C
-#define SSD1306_LCDWIDTH	128
-#define SSD1306_LCDHEIGHT	32
+#define SSD1306_I2C_ADDRESS		0x3C
+#define SSD1306_LCDWIDTH		128
+#define SSD1306_LCDHEIGHT		32
+#define SSD1306_LCDBYTES		(SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8)
 
 #define SSD1306_SETLOWCOLUMN			0x00
 #define SSD1306_SETHIGHCOLUMN			0x10
@@ -38,6 +39,27 @@
 #define SSD1306_VERTICAL_AND_RIGHT_HORIZONTAL_SCROLL	0x29
 #define SSD1306_VERTICAL_AND_LEFT_HORIZONTAL_SCROLL		0x2A
 
-void oled_init(void);
-void ssd1306_command(uint8_t c);
-void oled_display(void);
+#define BLACK		0
+#define WHITE		1
+#define INVERSE		2
+
+
+extern int16_t oled_cursor_x, oled_cursor_y;
+extern uint16_t oled_text_color, oled_text_bgcolor;
+extern uint8_t oled_text_size;
+
+
+void oled_init(void); // init i2c & OLED
+void oled_command(uint8_t c);
+void oled_display(void); // show what is in the buffer
+void oled_cls(void); // clear screen
+void oled_setCursor(int16_t x, int16_t y);
+void oled_setTextColor(uint16_t c);
+void oled_setTextColors(uint16_t c, uint16_t bg);
+void oled_setTextSize(uint8_t s);
+void oled_drawFastVLine(int16_t x, int16_t __y, int16_t __h, uint16_t color);
+void oled_fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+void oled_drawPixel(int16_t x, int16_t y, uint16_t color);
+void oled_drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg, uint8_t size);
+void oled_write(uint8_t c); // write one character to the screen
+void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *str);
