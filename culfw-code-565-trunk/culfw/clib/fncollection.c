@@ -18,6 +18,8 @@
 #include "rf_router.h"
 #include "ethernet.h"
 #include <avr/wdt.h>
+// UJE: OLED 128x32
+#include "oled_ssd1306.h"
 
 uint8_t led_mode = 2;   // Start blinking
 
@@ -290,7 +292,14 @@ yun_relais_func(char *in)
 		YUN_RELAIS_ON();
 	else
 		YUN_RELAIS_OFF();
-	ewb(EE_YUN_RELAIS, yun_relais_state);
+	//ewb(EE_YUN_RELAIS, yun_relais_state);
+}
+
+
+// UJE: OLED 128x32 connected to the yunCUL
+void yun_oled_func(char *in)
+{
+	oled_println(1, WHITE, BLACK, in+1); // minus the leading command 'O'
 }
 
 

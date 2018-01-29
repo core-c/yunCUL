@@ -125,6 +125,7 @@ const PROGMEM t_fntab fntab[] = {
 #ifdef HAS_RFNATIVE
   { 'N', native_func },
 #endif
+  { 'O', yun_oled_func },
   { 'R', read_eeprom },
 #ifdef HAS_YUN_RELAIS
   { 'S', yun_relais_func },
@@ -169,7 +170,7 @@ main(void)
   // On an Arduino Yun this will last about 1.5 minute (90 seconds)
   // To be on the safe side, we wait 120 seconds..
   led_init();
-  for (int i=0; i<600; i++) {
+  for (int i=0; i<5; i++) { // 600
     LED_ON();
     my_delay_ms(100);
     LED_OFF();
