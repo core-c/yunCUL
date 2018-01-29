@@ -21,7 +21,7 @@
 // UJE: OLED 128x32
 #include "oled_ssd1306.h"
 
-uint8_t led_mode = 2;   // Start blinking
+uint8_t led_mode = 1;   // Start off, but toggle on transmission
 
 // The relais connected to the UJE yunCUL
 #ifdef HAS_YUN_RELAIS
