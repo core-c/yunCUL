@@ -60,6 +60,8 @@ void oled_setTextSize(uint8_t s);
 void oled_drawFastVLine(int16_t x, int16_t __y, int16_t __h, uint16_t color);
 void oled_fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
 void oled_drawPixel(int16_t x, int16_t y, uint16_t color);
-void oled_drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg, uint8_t size);
-void oled_write(uint8_t c); // write one character to the screen
+uint8_t oled_drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg, uint8_t size);
+uint8_t oled_write(uint8_t c); // write one character to the screen
 void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *str);
+void oled_softScroll(int16_t y); // y<0 = up, y>0 = down.  To scroll all lines up (for the current textsize) use: y=-oled_text_size
+void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str); // scroll up a line first, then print text on lowest line..

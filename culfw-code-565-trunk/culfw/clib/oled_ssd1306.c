@@ -4,6 +4,7 @@
 #include <string.h>
 #include "oled_ssd1306.h"
 #include "i2cmaster.h"
+#include "delay.h"
 
 // Standard ASCII 5x7 font
 const PROGMEM const uint8_t oled_font[] PROGMEM = {
@@ -331,46 +332,6 @@ void oled_setTextSize(uint8_t s) {
 }
 
 
-void oled_init(void) {
-	// the two wire interface
-	i2c_init();
-	// Init sequence
-	oled_command(SSD1306_DISPLAYOFF);					// 0xAE
-	oled_command(SSD1306_SETDISPLAYCLOCKDIV);			// 0xD5
-	oled_command(0x80);									// the suggested ratio 0x80
-	oled_command(SSD1306_SETMULTIPLEX);					// 0xA8
-	oled_command(SSD1306_LCDHEIGHT - 1);
-	oled_command(SSD1306_SETDISPLAYOFFSET);				// 0xD3
-	oled_command(0x0);									// no offset
-	oled_command(SSD1306_SETSTARTLINE | 0x0);			// line #0
-	oled_command(SSD1306_CHARGEPUMP);					// 0x8D
-	oled_command(0x14);									// SSD1306_SWITCHCAPVCC
-	oled_command(SSD1306_MEMORYMODE);					// 0x20
-	oled_command(0x00);									// 0x0 act like ks0108
-	oled_command(SSD1306_SEGREMAP | 0x1);
-	oled_command(SSD1306_COMSCANDEC);
-	// 128x32
-	oled_command(SSD1306_SETCOMPINS);					// 0xDA
-	oled_command(0x02);
-	oled_command(SSD1306_SETCONTRAST);					// 0x81
-	oled_command(0x8F);
-	oled_command(SSD1306_SETPRECHARGE);					// 0xd9
-	oled_command(0xF1);									// SSD1306_SWITCHCAPVCC
-	oled_command(SSD1306_SETVCOMDETECT);					// 0xDB
-	oled_command(0x40);
-	oled_command(SSD1306_DISPLAYALLON_RESUME);			// 0xA4
-	oled_command(SSD1306_NORMALDISPLAY);				// 0xA6
-	oled_command(SSD1306_DEACTIVATE_SCROLL);
-	oled_command(SSD1306_DISPLAYON);					//--turn on oled panel
-	// display splashscreen
-	oled_display();
-	// cursor, colors and size
-	oled_setCursor(0,0);
-	oled_setTextColors(WHITE, BLACK);
-	oled_setTextSize(1);
-}
-
-
 void oled_command(uint8_t c) {
 	uint8_t data = (SSD1306_I2C_ADDRESS << 1) | I2C_WRITE;
 	uint8_t result = i2c_start(data);
@@ -417,6 +378,46 @@ void oled_display(void) {
 failure:
 	i2c_stop();
 	TWBR = twbrbackup;
+}
+
+
+void oled_init(void) {
+	// the two wire interface
+	i2c_init();
+	// Init sequence
+	oled_command(SSD1306_DISPLAYOFF);					// 0xAE
+	oled_command(SSD1306_SETDISPLAYCLOCKDIV);			// 0xD5
+	oled_command(0x80);									// the suggested ratio 0x80
+	oled_command(SSD1306_SETMULTIPLEX);					// 0xA8
+	oled_command(SSD1306_LCDHEIGHT - 1);
+	oled_command(SSD1306_SETDISPLAYOFFSET);				// 0xD3
+	oled_command(0x0);									// no offset
+	oled_command(SSD1306_SETSTARTLINE | 0x0);			// line #0
+	oled_command(SSD1306_CHARGEPUMP);					// 0x8D
+	oled_command(0x14);									// SSD1306_SWITCHCAPVCC
+	oled_command(SSD1306_MEMORYMODE);					// 0x20
+	oled_command(0x00);									// 0x0 act like ks0108
+	oled_command(SSD1306_SEGREMAP | 0x1);
+	oled_command(SSD1306_COMSCANDEC);
+	// 128x32
+	oled_command(SSD1306_SETCOMPINS);					// 0xDA
+	oled_command(0x02);
+	oled_command(SSD1306_SETCONTRAST);					// 0x81
+	oled_command(0x8F);
+	oled_command(SSD1306_SETPRECHARGE);					// 0xd9
+	oled_command(0xF1);									// SSD1306_SWITCHCAPVCC
+	oled_command(SSD1306_SETVCOMDETECT);					// 0xDB
+	oled_command(0x40);
+	oled_command(SSD1306_DISPLAYALLON_RESUME);			// 0xA4
+	oled_command(SSD1306_NORMALDISPLAY);				// 0xA6
+	oled_command(SSD1306_DEACTIVATE_SCROLL);
+	oled_command(SSD1306_DISPLAYON);					//--turn on oled panel
+	// display splashscreen
+	oled_display();
+	// cursor, colors and size
+	oled_setCursor(0,0);
+	oled_setTextColors(WHITE, BLACK);
+	oled_setTextSize(1);
 }
 
 
@@ -523,8 +524,8 @@ void oled_drawPixel(int16_t x, int16_t y, uint16_t color) {
 }
 
 
-void oled_drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg, uint8_t size) {
-	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT) || ((x + 6 * size - 1) < 0) || ((y + 8 * size - 1) < 0)) return;
+uint8_t oled_drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg, uint8_t size) {
+	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT) || ((x + 6 * size - 1) < 0) || ((y + 8 * size - 1) < 0)) return 0;
 	// Char bitmap = 5 columns
 	for (int8_t i=0; i<5; i++ ) {
 		uint8_t line = pgm_read_byte(&oled_font[c * 5 + i]);
@@ -549,17 +550,19 @@ void oled_drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16
 		else
 			oled_fillRect(x+5*size, y, size, 8*size, bg);
 	}
+	return 1;
 }
 
 
-void oled_write(uint8_t c) {
-	if (c == '\r') return; // Ignore carriage returns
+uint8_t oled_write(uint8_t c) {
+	if (c == '\r') return 1; // Ignore carriage returns (but return true, all is fine to continue)
 	if (c == '\n') {
 		oled_cursor_x = 0;
 		oled_cursor_y += oled_text_size * 8;
 	}
-	oled_drawChar(oled_cursor_x, oled_cursor_y, c, oled_text_color, oled_text_bgcolor, oled_text_size);
-	oled_cursor_x += oled_text_size * 6;
+	uint8_t OK = oled_drawChar(oled_cursor_x, oled_cursor_y, c, oled_text_color, oled_text_bgcolor, oled_text_size);
+	oled_cursor_x += oled_text_size * 6; // if not OK, still increase cursor position..
+	return OK;
 }
 
 
@@ -569,6 +572,37 @@ void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *
 	oled_setTextSize(s);
 	oled_setTextColors(c, bg);
 	int len = strlen(str);
-	for (int ch=0; ch<len; ch++) oled_write(str[ch]);
+	for (int ch=0; ch<len; ch++)
+		if (oled_write(str[ch]) == 1) break; // if off screen, then stop..
 	oled_display();
+}
+
+
+// y<0 = up
+// y>0 = down.   werkt dat ook met deze func?? todo check
+// To scroll all lines up (for the current textsize) use: y=-oled_text_size
+void oled_softScroll(int16_t y) {
+	if (y == 0) return; // nothing to scroll..
+	uint8_t w8 = SSD1306_LCDWIDTH / 8;
+	for (uint8_t row=0; row<SSD1306_LCDHEIGHT; row++) {
+		uint16_t rowOfs = row * w8;
+		uint16_t rowY = row - y;
+		uint16_t rowYOfs = rowY * w8;
+		if (rowY < 0 || rowY >= SSD1306_LCDHEIGHT)
+			memset(&oled_buffer[rowOfs], 0x00, w8);
+		else
+			for (uint8_t col=0; col<w8; col++) oled_buffer[rowOfs+col] = oled_buffer[rowYOfs+col];
+	}
+	oled_display();
+}
+
+
+// scroll up a line first, then print text on lowest line..
+void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
+	// scroll softly
+	for (uint8_t pixel=0; pixel<s*8; pixel++) {
+		oled_softScroll(-1);
+		my_delay_ms(12);
+	}
+	oled_print(0, ((SSD1306_LCDHEIGHT/8)-1)*8, s, c, bg, str);
 }
