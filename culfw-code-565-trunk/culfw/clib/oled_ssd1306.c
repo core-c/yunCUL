@@ -593,7 +593,7 @@ void oled_scroll(int16_t y) {
 			for (uint8_t col=0; col<w8; col++) oled_buffer[rowOfs+col] = oled_buffer[rowYOfs+col];
 	}*/
 	for (uint8_t x=0; x<SSD1306_LCDWIDTH; x++) {
-		uint32_t col = oled_buffer[x] << 24 | oled_buffer[SSD1306_LCDWIDTH+x] << 16 | oled_buffer[2*SSD1306_LCDWIDTH+x] << 8 | oled_buffer[3*SSD1306_LCDWIDTH+x];
+		uint32_t col = (uint32_t)oled_buffer[x] << 24 | (uint32_t)oled_buffer[SSD1306_LCDWIDTH+x] << 16 | (uint32_t)oled_buffer[2*SSD1306_LCDWIDTH+x] << 8 | (uint32_t)oled_buffer[3*SSD1306_LCDWIDTH+x];
 		col <<= -y;
 		oled_buffer[x] = (col >> 24) & 0xFF;
 		oled_buffer[SSD1306_LCDWIDTH+x] = (col >> 16) & 0xFF;
