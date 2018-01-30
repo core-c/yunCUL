@@ -592,13 +592,18 @@ void oled_scroll(int16_t y) {
 		else
 			for (uint8_t col=0; col<w8; col++) oled_buffer[rowOfs+col] = oled_buffer[rowYOfs+col];
 	}*/
+	y = -y;
 	for (uint8_t x=0; x<SSD1306_LCDWIDTH; x++) {
-		uint32_t col = (uint32_t)oled_buffer[x] << 24 | (uint32_t)oled_buffer[SSD1306_LCDWIDTH+x] << 16 | (uint32_t)oled_buffer[2*SSD1306_LCDWIDTH+x] << 8 | (uint32_t)oled_buffer[3*SSD1306_LCDWIDTH+x];
-		col <<= -y;
-		oled_buffer[x] = (col >> 24) & 0xFF;
-		oled_buffer[SSD1306_LCDWIDTH+x] = (col >> 16) & 0xFF;
-		oled_buffer[2*SSD1306_LCDWIDTH+x] = (col >> 8) & 0xFF;
-		oled_buffer[3*SSD1306_LCDWIDTH+x] = col & 0xFF;
+		uint16_t r0 = x;
+		uint16_t r1 = SSD1306_LCDWIDTH+x;
+		uint16_t r2 = 2*SSD1306_LCDWIDTH+x;
+		uint16_t r3 = 3*SSD1306_LCDWIDTH+x;
+		uint32_t col = (uint32_t)oled_buffer[r3] << 24 | (uint32_t)oled_buffer[r2] << 16 | (uint32_t)oled_buffer[r1] << 8 | (uint32_t)oled_buffer[r0];
+		col >>= y;
+		oled_buffer[r3] = (col >> 24) & 0xFF;
+		oled_buffer[r2] = (col >> 16) & 0xFF;
+		oled_buffer[r1] = (col >> 8) & 0xFF;
+		oled_buffer[r0] = col & 0xFF;
 	}
 }
 
@@ -608,8 +613,9 @@ void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
 	// scroll softly
 	for (uint8_t pixel=0; pixel<s*8; pixel++) {
 		oled_scroll(-1);
+		oled_print(0, SSD1306_LCDHEIGHT-pixel, s, c, bg, str); // scroll text into view (instead of empty space)
 		oled_display();
 		my_delay_ms(12);
 	}
-	oled_print(0, ((SSD1306_LCDHEIGHT/8)-1)*8, s, c, bg, str);
+//	oled_print(0, ((SSD1306_LCDHEIGHT/8)-1)*8, s, c, bg, str);
 }
