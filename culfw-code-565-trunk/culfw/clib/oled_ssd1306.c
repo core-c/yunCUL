@@ -560,9 +560,9 @@ uint8_t oled_write(uint8_t c) {
 		oled_cursor_x = 0;
 		oled_cursor_y += oled_text_size * 8;
 	}
-	uint8_t OK = oled_drawChar(oled_cursor_x, oled_cursor_y, c, oled_text_color, oled_text_bgcolor, oled_text_size);
+	uint8_t result = oled_drawChar(oled_cursor_x, oled_cursor_y, c, oled_text_color, oled_text_bgcolor, oled_text_size);
 	oled_cursor_x += oled_text_size * 6; // if not OK, still increase cursor position..
-	return OK;
+	return result;
 }
 
 
@@ -573,8 +573,7 @@ void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *
 	oled_setTextColors(c, bg);
 	int len = strlen(str);
 	for (int ch=0; ch<len; ch++)
-		if (oled_write(str[ch]) == 1) break; // if off screen, then stop..
-	oled_display();
+		if (oled_write(str[ch]) == 0) break; // if off screen, then stop..
 }
 
 
@@ -583,7 +582,7 @@ void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *
 // To scroll all lines up (for the current textsize) use: y=-oled_text_size
 void oled_scroll(int16_t y) {
 	if (y == 0) return; // nothing to scroll..
-	uint8_t w8 = SSD1306_LCDWIDTH / 8;
+/*	uint8_t w8 = SSD1306_LCDWIDTH / 8;
 	for (uint8_t row=0; row<SSD1306_LCDHEIGHT; row++) {
 		uint16_t rowOfs = row * w8;
 		uint16_t rowY = row - y;
@@ -592,8 +591,15 @@ void oled_scroll(int16_t y) {
 			memset(&oled_buffer[rowOfs], 0x00, w8);
 		else
 			for (uint8_t col=0; col<w8; col++) oled_buffer[rowOfs+col] = oled_buffer[rowYOfs+col];
+	}*/
+	for (uint8_t x=0; x<SSD1306_LCDWIDTH; x++) {
+		uint32_t col = oled_buffer[x] << 24 | oled_buffer[SSD1306_LCDWIDTH+x] << 16 | oled_buffer[2*SSD1306_LCDWIDTH+x] << 8 | oled_buffer[3*SSD1306_LCDWIDTH+x];
+		col <<= -y;
+		oled_buffer[x] = (col >> 24) & 0xFF;
+		oled_buffer[SSD1306_LCDWIDTH+x] = (col >> 16) & 0xFF;
+		oled_buffer[2*SSD1306_LCDWIDTH+x] = (col >> 8) & 0xFF;
+		oled_buffer[3*SSD1306_LCDWIDTH+x] = col & 0xFF;
 	}
-	oled_display();
 }
 
 
@@ -602,6 +608,7 @@ void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
 	// scroll softly
 	for (uint8_t pixel=0; pixel<s*8; pixel++) {
 		oled_scroll(-1);
+		oled_display();
 		my_delay_ms(12);
 	}
 	oled_print(0, ((SSD1306_LCDHEIGHT/8)-1)*8, s, c, bg, str);
