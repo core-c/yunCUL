@@ -300,8 +300,13 @@ void yun_relais_func(char *in) {
 //		char F = Foreground color.		value can be one of '0', '1'				(0 = BLACK, 1 = WHITE)
 //		char B = Background color.		value can be one of '0', '1'				(0 = BLACK, 1 = WHITE)
 //		char[] t = text					where every space ' ' must be annotated by a '_'
+// There are special cases:
+//		input text == "++" ? means: turn on display
+//		input text == "--" ? means: turn off display
 void yun_oled_func(char *in) {
 	if (in[1]==0 || in[2]==0 || in[3]==0 || in[4]==0) return;
+	if (in[1]=='+' && in[2]=='+') { oled_command(SSD1306_DISPLAYON); return; }
+	if (in[1]=='-' && in[2]=='-') { oled_command(SSD1306_DISPLAYOFF); return; }
 	// font size
 	uint8_t s;
 	switch(in[1]) {
@@ -344,10 +349,11 @@ void yun_oled_func(char *in) {
 		default:
 			bg = BLACK;
 	}
-	// the text (convert '_' to ' ')
+	// the text (minus the leading command 'O',   convert '_' to ' ')
 	char *str = in + 4;
 	for (uint16_t i=0; str[i]!=0; i++) if (str[i] == '_') str[i] = ' ';
-	oled_println(s, c, bg, str); // minus the leading command 'O'
+	oled_command(SSD1306_DISPLAYON);
+	oled_println(s, c, bg, str);
 }
 
 
