@@ -317,31 +317,31 @@ void yun_oled_func(char *in) {
 		case '4':
 			s = 4;
 			break;
-		else
+		default:
 			s = 1;
 	}
 	// foreground color
 	uint16_t c;
-	switch(int[2]) {
+	switch(in[2]) {
 		case '0':
 			c = BLACK;
 			break;
 		case '1':
 			c = WHITE;
 			break;
-		else
+		default:
 			c = WHITE;
 	}
 	// background color
 	uint16_t bg = BLACK;
-	switch(int[3]) {
+	switch(in[3]) {
 		case '0':
 			bg = BLACK;
 			break;
 		case '1':
 			bg = WHITE;
 			break;
-		else
+		default:
 			bg = BLACK;
 	}
 	// the text (convert '_' to ' ')
