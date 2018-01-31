@@ -284,9 +284,7 @@ ledfunc(char *in)
 
 
 // UJE: the relais connected to the yunCUL
-void
-yun_relais_func(char *in)
-{
+void yun_relais_func(char *in) {
 	fromhex(in+1, &yun_relais_state, 1);
 	if(yun_relais_state & 1)
 		YUN_RELAIS_ON();
@@ -297,9 +295,59 @@ yun_relais_func(char *in)
 
 
 // UJE: OLED 128x32 connected to the yunCUL
-void yun_oled_func(char *in)
-{
-	oled_println(1, WHITE, BLACK, in+1); // minus the leading command 'O'
+// *in text has the be in the format: SFBt
+// 		char S = text Size.				value can be one of '1', '2', '3', '4'
+//		char F = Foreground color.		value can be one of '0', '1'				(0 = BLACK, 1 = WHITE)
+//		char B = Background color.		value can be one of '0', '1'				(0 = BLACK, 1 = WHITE)
+//		char[] t = text					where every space ' ' must be annotated by a '_'
+void yun_oled_func(char *in) {
+	if (in[1]==0 || in[2]==0 || in[3]==0 || in[4]==0) return;
+	// font size
+	uint8_t s;
+	switch(in[1]) {
+		case '1':
+			s = 1;
+			break;
+		case '2':
+			s = 2;
+			break;
+		case '3':
+			s = 3;
+			break;
+		case '4':
+			s = 4;
+			break;
+		else
+			s = 1;
+	}
+	// foreground color
+	uint16_t c;
+	switch(int[2]) {
+		case '0':
+			c = BLACK;
+			break;
+		case '1':
+			c = WHITE;
+			break;
+		else
+			c = WHITE;
+	}
+	// background color
+	uint16_t bg = BLACK;
+	switch(int[3]) {
+		case '0':
+			bg = BLACK;
+			break;
+		case '1':
+			bg = WHITE;
+			break;
+		else
+			bg = BLACK;
+	}
+	// the text (convert '_' to ' ')
+	char *str = in + 4;
+	for (uint16_t i=0; str[i]==0; i++) if (str[i] == '_') str[i] = ' ';
+	oled_println(s, c, bg, str); // minus the leading command 'O'
 }
 
 
