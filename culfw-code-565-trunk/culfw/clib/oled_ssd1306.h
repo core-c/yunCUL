@@ -1,3 +1,6 @@
+#ifndef __OLEDSSD1306_H_
+#define __OLEDSSD1306_H_
+
 #define SSD1306_I2C_ADDRESS		0x3C
 #define SSD1306_LCDWIDTH		128
 #define SSD1306_LCDHEIGHT		32
@@ -65,3 +68,5 @@ uint8_t oled_write(uint8_t c); // write one character to the screen
 void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *str);
 void oled_scroll(int16_t y); // y<0 = up, y>0 = down.  To scroll all lines up (for the current textsize) use: y=-oled_text_size
 void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str); // scroll up a line first, then print text on lowest line..
+
+#endif

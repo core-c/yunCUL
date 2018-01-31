@@ -158,7 +158,7 @@ const PROGMEM t_fntab fntab[] = {
 int
 main(void)
 {
-// UJE: the relais connected to the yunCUL
+	// UJE: the relais connected to the yunCUL
 #ifdef HAS_YUN_RELAIS
 	yun_relais_init();
 #endif
@@ -166,16 +166,21 @@ main(void)
 	// UJE: OLED init and display splashscreen..
 	oled_init();
 
-  // wait for u-boot to finish..
-  // On an Arduino Yun this will last about 1.5 minute (90 seconds)
-  // To be on the safe side, we wait 120 seconds..
-  led_init();
-  for (int i=0; i<5; i++) { // 600
-    LED_ON();
-    my_delay_ms(100);
-    LED_OFF();
-    my_delay_ms(100);
-  }
+	// wait for u-boot to finish..
+	// On an Arduino Yun this will last about 1.5 minute (90 seconds)
+	// To be on the safe side, we wait 120 seconds.. (that makes 600 loop-cycles).
+	// ^^That's the old method.
+	// Now we blink the LED for just a second, and continue the program (while Linux is still booting).
+	// Once Linux has finished booting, it resets the AVR (using the script: reset-mcu).
+	// The LED will blink again (for a second), program continues,
+	// .. but this time, the serial connection (AVR<->Linux) will be opened succesfully, and the program works.
+	led_init();
+	for (int i=0; i<5; i++) { // 600
+		LED_ON();
+		my_delay_ms(100);
+		LED_OFF();
+		my_delay_ms(100);
+	}
 
 
   wdt_disable();
