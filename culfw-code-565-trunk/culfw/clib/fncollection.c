@@ -304,9 +304,10 @@ void yun_relais_func(char *in) {
 //		input text == "++" ? means: turn on display
 //		input text == "--" ? means: turn off display
 void yun_oled_func(char *in) {
-	if (in[1]==0 || in[2]==0 || in[3]==0 || in[4]==0) return;
+	if (in[1]==0 || in[2]==0) return;
 	if (in[1]=='+' && in[2]=='+') { oled_command(SSD1306_DISPLAYON); return; }
 	if (in[1]=='-' && in[2]=='-') { oled_command(SSD1306_DISPLAYOFF); return; }
+	if (in[3]==0 || in[4]==0) return;
 	// font size
 	uint8_t s;
 	switch(in[1]) {
