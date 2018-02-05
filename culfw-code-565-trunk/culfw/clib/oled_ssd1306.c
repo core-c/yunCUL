@@ -657,7 +657,7 @@ void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
 		oled_print(0, SSD1306_LCDHEIGHT-pixel, s, c, bg, str); // scroll text into view (instead of empty space)
 		oled_display();
 	}*/
-	uint8_t pixels = -s * 8;
+	int8_t pixels = -s * 8;
 	oled_scroll(pixels); // scroll a full lineheight in at once
 	oled_print(0, SSD1306_LCDHEIGHT+pixels, s, c, bg, str); // scroll text into view (instead of empty space)
 	oled_display();
