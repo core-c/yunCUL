@@ -158,13 +158,30 @@ const PROGMEM t_fntab fntab[] = {
 int
 main(void)
 {
+
+	my_delay_ms(250);
+	my_delay_ms(250);
+
 	// UJE: the relais connected to the yunCUL
 #ifdef HAS_YUN_RELAIS
 	yun_relais_init();
 #endif
 
+	my_delay_ms(250);
+	my_delay_ms(250);
+
+	led_init();
+	for (int i=0; i<15; i++) { // 3 sec  600
+		LED_ON();
+		my_delay_ms(50);
+		LED_OFF();
+		my_delay_ms(150);
+	}
+
 	// UJE: OLED init and display splashscreen..
+#ifdef HAS_YUN_OLED
 	oled_init();
+#endif
 
 	// wait for u-boot to finish..
 	// On an Arduino Yun this will last about 1.5 minute (90 seconds)
@@ -174,12 +191,12 @@ main(void)
 	// Once Linux has finished booting, it resets the AVR (using the script: reset-mcu).
 	// The LED will blink again (for a second), program continues,
 	// .. but this time, the serial connection (AVR<->Linux) will be opened succesfully, and the program works.
-	led_init();
-	for (int i=0; i<5; i++) { // 600
+//	led_init();
+	for (int i=0; i<15; i++) { // 3 sec  600
 		LED_ON();
-		my_delay_ms(100);
+		my_delay_ms(200);
 		LED_OFF();
-		my_delay_ms(100);
+		my_delay_ms(200);
 	}
 
 

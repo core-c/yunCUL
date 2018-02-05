@@ -52,7 +52,7 @@
 #define CC1100_OUT_PIN			PD7
 #define CC1100_OUT_IN			PIND
 #define CCTEMP_MUX				CC1100_OUT_PIN
-/*=== /*1 ===*/
+/*=== *1 ===*/
 #endif
 
 /* CC1101 GDO2 Rx Interrupt */
@@ -73,7 +73,7 @@
 #define CC1100_INTVECT			INT6_vect
 #define CC1100_ISC				ISC60
 #define CC1100_EICR				EICRB
-/*=== /*2 ===*/
+/*=== *2 ===*/
 
 /* die aufgelötete gelbe LED ist an PB5/SCLK angeschlossen! */
 /* externe LED, on Yun digital pin 8*/
@@ -159,5 +159,8 @@ extern const uint8_t mark433_pin;
 #define YUN_RELAIS_ON()			YUN_RELAIS_PORT |= _BV(YUN_RELAIS_PIN)
 #define YUN_RELAIS_OFF( )		YUN_RELAIS_PORT &= ~_BV(YUN_RELAIS_PIN)
 
+
+// UJE: the OLED 128x32 connected to the yunCUL. on the I2C bus (pins D0 & D1)
+#define HAS_YUN_OLED
 
 #endif

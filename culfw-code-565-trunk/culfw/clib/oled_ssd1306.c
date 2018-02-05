@@ -394,7 +394,7 @@ uint8_t oled_command(uint8_t c) {
 	i2c_stop();
 	return 0;
 failure:
-	//i2c_reset();
+	i2c_reset();
 	return 1;
 }
 
@@ -426,7 +426,7 @@ uint8_t oled_display(void) {
 failurex:
 	TWBR = twbrbackup;
 failure:
-	i2c_reset();
+	//i2c_reset();
 	return 1;
 }
 
@@ -651,14 +651,16 @@ void oled_scroll(int16_t y) {
 }
 
 
-// scroll up a line first, then print text on lowest line..
+// scroll softly
 void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
-	// scroll softly
-	for (uint8_t pixel=0; pixel<s*8; pixel++) {
-		oled_scroll(-1);
+/*	for (uint8_t pixel=0; pixel<s*8; pixel++) {
+		oled_scroll(-1); // softest
 		oled_print(0, SSD1306_LCDHEIGHT-pixel, s, c, bg, str); // scroll text into view (instead of empty space)
 		oled_display();
-	}
+	}*/
+	oled_scroll(-s); // scroll a full lineheight in at once
+	oled_print(0, SSD1306_LCDHEIGHT-s*8, s, c, bg, str); // scroll text into view (instead of empty space)
+	oled_display();
 }
 
 

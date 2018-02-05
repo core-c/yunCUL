@@ -28,6 +28,11 @@ uint8_t led_mode = 1;   // Start off, but toggle on transmission
 uint8_t yun_relais_state = 0; // relais off
 #endif
 
+// UJE: the OLED connected to the yunCUL
+#ifdef HAS_YUN_OLED
+uint8_t yun_oled_on = 1;
+#endif
+
 #ifdef XLED
 #include "xled.h"
 #endif
@@ -305,8 +310,8 @@ void yun_relais_func(char *in) {
 //		input text == "--" ? means: turn off display
 void yun_oled_func(char *in) {
 	if (in[1]==0 || in[2]==0) return; // no S, or no F (or no ++, no --)
-	if (in[1]=='+' && in[2]=='+') { oled_command(SSD1306_DISPLAYON); return; }
-	if (in[1]=='-' && in[2]=='-') { oled_command(SSD1306_DISPLAYOFF); return; }
+	if (in[1]=='+' && in[2]=='+') { if (yun_oled_on == 0) oled_command(SSD1306_DISPLAYON); yun_oled_on = 1; return; }
+	if (in[1]=='-' && in[2]=='-') { if (yun_oled_on == 1) oled_command(SSD1306_DISPLAYOFF); yun_oled_on = 0; return; }
 	if (in[3]==0 || in[4]==0) return; // no B, or no text
 	// font size
 	uint8_t s;
@@ -353,7 +358,7 @@ void yun_oled_func(char *in) {
 	// the text (minus the leading command 'O',   convert '_' to ' ')
 	char *str = in + 4;
 	for (uint16_t i=0; str[i]!=0; i++) if (str[i] == '_') str[i] = ' ';
-	if (oled_command(SSD1306_DISPLAYON) != 0) return;
+	if (yun_oled_on == 0) if (oled_command(SSD1306_DISPLAYON) != 0) return; // if display is off?, turn it on
 	oled_println(s, c, bg, str);
 }
 

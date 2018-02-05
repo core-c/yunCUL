@@ -161,8 +161,8 @@ unsigned char i2c_write( unsigned char data )
 
 	// check value of TWI Status Register. Mask prescaler bits
 	twst = TW_STATUS & 0xF8;
-	if( twst != TW_MT_DATA_ACK) return 1;
-	//if( twst != TW_MT_DATA_ACK && twst != TW_MT_DATA_NACK) return 1;
+//	if( twst != TW_MT_DATA_ACK) return 1;
+	if( twst != TW_MT_DATA_ACK && twst != TW_MT_DATA_NACK) return 1;
 	return 0;
 
 }/* i2c_write */

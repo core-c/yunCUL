@@ -13,7 +13,9 @@ void ledfunc(char *);
 #ifdef HAS_YUN_RELAIS
 void yun_relais_func(char *); // UJE: the relais connected to the yunCUL
 #endif
+#ifdef HAS_YUN_OLED
 void yun_oled_func(char *); // UJE: the OLED 128x32 connected to the yunCUL
+#endif
 void prepare_boot(char *);
 void version(char *);
 void do_wdt_enable(uint8_t t);
@@ -86,6 +88,9 @@ void do_wdt_enable(uint8_t t);
 extern uint8_t led_mode;
 #ifdef HAS_YUN_RELAIS
 extern uint8_t yun_relais_state; // UJE: the relais connected to the yunCUL
+#endif
+#ifdef HAS_YUN_OLED
+extern uint8_t yun_oled_on; // UJE: the OLED connected to the yunCUL
 #endif
 
 #endif
