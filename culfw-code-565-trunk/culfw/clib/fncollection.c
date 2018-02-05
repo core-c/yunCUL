@@ -224,7 +224,7 @@ eeprom_factory_reset(char *in)
   ewb(EE_RF_ROUTER_ID, 0);
   ewb(EE_RF_ROUTER_ROUTER, 0);
   ewb(EE_REQBL, 0);
-  ewb(EE_LED, 2);
+  ewb(EE_LED, 1);
 // UJE: the relais connected to the yunCUL
 #ifdef HAS_YUN_RELAIS
 	ewb(EE_YUN_RELAIS, 0); // relais off
@@ -304,10 +304,10 @@ void yun_relais_func(char *in) {
 //		input text == "++" ? means: turn on display
 //		input text == "--" ? means: turn off display
 void yun_oled_func(char *in) {
-	if (in[1]==0 || in[2]==0) return;
+	if (in[1]==0 || in[2]==0) return; // no S, or no F (or no ++, no --)
 	if (in[1]=='+' && in[2]=='+') { oled_command(SSD1306_DISPLAYON); return; }
 	if (in[1]=='-' && in[2]=='-') { oled_command(SSD1306_DISPLAYOFF); return; }
-	if (in[3]==0 || in[4]==0) return;
+	if (in[3]==0 || in[4]==0) return; // no B, or no text
 	// font size
 	uint8_t s;
 	switch(in[1]) {
