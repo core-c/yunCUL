@@ -636,9 +636,8 @@ void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *
 void oled_scroll(int16_t y) {
 	if (y == 0) return; // nothing to scroll..
 	uint16_t r0 = 0, r1 = r0 + SSD1306_LCDWIDTH, r2 = r1 + SSD1306_LCDWIDTH, r3 = r2 + SSD1306_LCDWIDTH;
-	uint32_t col;
 	for (r0=0; r0<SSD1306_LCDWIDTH;) {
-		col = (uint32_t)oled_buffer[r3] << 24 | (uint32_t)oled_buffer[r2] << 16 | (uint32_t)oled_buffer[r1] << 8 | (uint32_t)oled_buffer[r0];
+		uint32_t col = (uint32_t)oled_buffer[r3] << 24 | (uint32_t)oled_buffer[r2] << 16 | (uint32_t)oled_buffer[r1] << 8 | (uint32_t)oled_buffer[r0];
 		if (y<0) col >>= -y; else col <<= y;
 		oled_buffer[r3++] = (col >> 24) & 0xFF;
 		oled_buffer[r2++] = (col >> 16) & 0xFF;
@@ -658,8 +657,9 @@ void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
 		oled_print(0, SSD1306_LCDHEIGHT-pixel, s, c, bg, str); // scroll text into view (instead of empty space)
 		oled_display();
 	}*/
-	oled_scroll(-s); // scroll a full lineheight in at once
-	oled_print(0, SSD1306_LCDHEIGHT-s*8, s, c, bg, str); // scroll text into view (instead of empty space)
+	uint8_t pixels = -s * 8;
+	oled_scroll(pixels); // scroll a full lineheight in at once
+	oled_print(0, SSD1306_LCDHEIGHT+pixels, s, c, bg, str); // scroll text into view (instead of empty space)
 	oled_display();
 }
 
