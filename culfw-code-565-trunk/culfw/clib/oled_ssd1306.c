@@ -306,26 +306,59 @@ uint8_t oled_buffer[SSD1306_LCDHEIGHT * SSD1306_LCDWIDTH / 8] = {
 int16_t oled_cursor_x, oled_cursor_y;
 uint16_t oled_text_color, oled_text_bgcolor;
 uint8_t oled_text_size;
+uint8_t oled_addr_write;
 
 
-void i2c_reset(void) {
+uint8_t i2c_reset(void) {
 	TWCR &= ~(_BV(TWEN)); //Disable the Atmel 2-Wire interface so we can control the SDA and SCL pins directly
-	// SCL
-	DDRD &= ~0x01; // clear bit 0. set as input
-	DDRD |= 0x01; // set bit 0. set as output
-	my_delay_us(20);
+	TWCR |= _BV(TWINT); // "the TWINT bit should be cleared (by writing it to one)"
+	// SCL & SDA as input with pull-ups enabled
 	DDRD &= ~0x01; // clear bit 0. set as input
 	PORTD |= 0x01; // SCL on AVR pin D0
-	//
-	my_delay_us(10);
-	// SDA
-	DDRD &= ~0x02; // clear bit 1. set as input
-	DDRD |= 0x02; // set bit 1. set as output
-	my_delay_us(20);
+	my_delay_us(50);
 	DDRD &= ~0x02; // clear bit 1. set as input
 	PORTD |= 0x02; // SDA on AVR pin D1
-	//
+	// Check is SCL is Low. If it is held low, the AVR cannot become the I2C master
+	uint8_t SCL_LOW = PIND & PIND0;
+	if (SCL_LOW == 0) return 1; // I2C bus error. Could not clear SCL clock line held low
+	// Check SDA input
+	uint8_t SDA_LOW = PIND & PIND1;
+	uint8_t clockCount = 20; // > 2x9 clock
+	// If SDA is Low
+	while(SDA_LOW == 0 && (clockCount > 0)) {
+		clockCount--;
+		// Note: I2C bus is open collector so do NOT drive SCL or SDA high.
+		DDRD &= ~0x01; // release SCL pullup so that when made output it will be LOW
+		DDRD |= 0x01; // then clock SCL Low
+		my_delay_us(20); // for >5uS
+		DDRD &= ~0x01; // release SCL LOW
+		PORTD |= 0x01; // turn on pullup resistors again
+		// do not force high as slave may be holding it low for clock stretching
+		my_delay_us(20); // The >5uS is so that even the slowest I2C devices are handled
+		SCL_LOW = PIND & PIND1; // Check if SCL is Low
+		uint8_t counter = 20;
+		while(SCL_LOW == 0 && (counter > 0)) { // loop waiting for SCL to become High only wait 2sec
+			counter--;
+			my_delay_ms(100);
+			SCL_LOW = PIND & PIND1; // Check if SCL is Low
+		}
+		if (SCL_LOW == 0) return 2; // I2C bus error. Could not clear. SCL clock line held low by slave clock stretch for >2sec
+		SDA_LOW = PIND & PIND1;
+	}
+	if (SDA_LOW == 0) return 3; // I2C bus error. Could not clear. SDA data line held low
+	// else pull SDA line low for Start or Repeated Start
+	DDRD &= ~0x02; // set as input. remove pullup
+	DDRD |= 0x02; // and then make it LOW i.e. send an I2C Start or Repeated start control
+	// When there is only one I2C master a Start or Repeat Start has the same function as a Stop and clears the bus
+	my_delay_us(20);
+	DDRD &= ~0x02; // remove output low
+	PORTD |= 0x02; // and make SDA high i.e. send I2C STOP control
+	my_delay_us(20);
+	DDRD &= ~0x02; // and reset pins as tri-state inputs which is the default state on reset
+	DDRD &= ~0x01; // scl too
+	// the bus has been cleared..
 	i2c_init();
+	return 0;
 }
 
 
@@ -354,52 +387,55 @@ void oled_setTextSize(uint8_t s) {
 
 
 uint8_t oled_command(uint8_t c) {
-	uint8_t data = (SSD1306_I2C_ADDRESS << 1) | I2C_WRITE;
-	if (i2c_start(data) != 0) goto failure;
-	data = 0x00;   // Co = 0, D/C = 0
+	uint8_t data = 0x00;   // Co = 0, D/C = 0
+	if (i2c_start(oled_addr_write) != 0) goto failure;
 	if (i2c_write(data) != 0) goto failure;
 	if (i2c_write(c) != 0) goto failure;
 	i2c_stop();
-	return 1;
-failure:
-	i2c_reset();
 	return 0;
+failure:
+	//i2c_reset();
+	return 1;
 }
 
 
 uint8_t oled_display(void) {
-	if (!oled_command(SSD1306_COLUMNADDR)) goto failure;
-	if (!oled_command(0)) goto failure;						// Column start address (0 = reset)
-	if (!oled_command(SSD1306_LCDWIDTH-1)) goto failure;	// Column end address (127 = reset)
-	if (!oled_command(SSD1306_PAGEADDR)) goto failure;
-	if (!oled_command(0)) goto failure;						// Page start address (0 = reset)
-	if (!oled_command(3)) goto failure;						// Page end address, LCDHEIGHT == 32
+	if (oled_command(SSD1306_COLUMNADDR) != 0) goto failure;
+	if (oled_command(0) != 0) goto failure;						// Column start address (0 = reset)
+	if (oled_command(SSD1306_LCDWIDTH-1) != 0) goto failure;	// Column end address (127 = reset)
+	if (oled_command(SSD1306_PAGEADDR) != 0) goto failure;
+	if (oled_command(0) != 0) goto failure;						// Page start address (0 = reset)
+	if (oled_command(3) != 0) goto failure;						// Page end address, LCDHEIGHT == 32
 	// save I2C bitrate
 	uint8_t twbrbackup = TWBR;
 	TWBR = 12; // upgrade to 400KHz!   (16MHz/400KHz-16)/2 = 12
+	//
 	// write in chunks..
-	uint8_t addresswrite = (SSD1306_I2C_ADDRESS << 1) | I2C_WRITE;
 	uint8_t setstartline = SSD1306_SETSTARTLINE; // 0x40
 	for (uint16_t i=0; i<SSD1306_LCDBYTES;) {
-		if (i2c_start(addresswrite) != 0) goto failure; // i2c_start_wait	(data)
-		if (i2c_write(setstartline) != 0) goto failure;
+		if (i2c_start(oled_addr_write) != 0) goto failurex; // i2c_start_wait	(data)
+		if (i2c_write(setstartline) != 0) goto failurex;
 		for (uint8_t x=0; x<32; x++) { // 16
-			if (i2c_write(oled_buffer[i]) != 0) goto failure;
+			if (i2c_write(oled_buffer[i]) != 0) goto failurex;
 			i++;
 		}
 		i2c_stop();
 	}
 	TWBR = twbrbackup;
-	return 1;
+	return 0;
+failurex:
+	TWBR = twbrbackup;
 failure:
 	i2c_reset();
-	return 0;
+	return 1;
 }
 
 
 void oled_init(void) {
 	// activate internal pullups for the two wire interface.
-//	PORTD |= 0x03; // SDA on AVR pin D1, SCL on AVR pin D0
+	DDRD &= ~0x03; // clear bits 0 & 1. set as input
+	PORTD |= 0x03; // SCL on AVR pin D0, SDA on AVR pin D1
+	oled_addr_write = (SSD1306_I2C_ADDRESS << 1) | I2C_WRITE;
 	i2c_init();
 	// Init sequence
 	oled_command(SSD1306_DISPLAYOFF);					// 0xAE
@@ -542,7 +578,7 @@ void oled_drawPixel(int16_t x, int16_t y, uint16_t color) {
 
 
 uint8_t oled_drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg, uint8_t size) {
-	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT) || ((x + 6 * size - 1) < 0) || ((y + 8 * size - 1) < 0)) return 0;
+	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT) || ((x + 6 * size - 1) < 0) || ((y + 8 * size - 1) < 0)) return 1;
 	// Char bitmap = 5 columns
 	for (int8_t i=0; i<5; i++ ) {
 		uint8_t line = pgm_read_byte(&oled_font[c * 5 + i]);
@@ -567,12 +603,12 @@ uint8_t oled_drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uin
 		else
 			oled_fillRect(x+5*size, y, size, 8*size, bg);
 	}
-	return 1;
+	return 0;
 }
 
 
 uint8_t oled_write(uint8_t c) {
-	if (c == '\r') return 1; // Ignore carriage returns (but return true, all is fine to continue)
+	if (c == '\r') return 0; // Ignore carriage returns (but return 0, all is fine to continue)
 	if (c == '\n') {
 		oled_cursor_x = 0;
 		oled_cursor_y += oled_text_size * 8;
@@ -590,7 +626,7 @@ void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *
 	oled_setTextColors(c, bg);
 	int len = strlen(str);
 	for (int ch=0; ch<len; ch++)
-		if (oled_write(str[ch]) == 0) break; // if off screen, then stop..
+		if (oled_write(str[ch]) != 0) break; // if off screen, then stop..
 }
 
 
@@ -622,7 +658,6 @@ void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
 		oled_scroll(-1);
 		oled_print(0, SSD1306_LCDHEIGHT-pixel, s, c, bg, str); // scroll text into view (instead of empty space)
 		oled_display();
-		//my_delay_ms(9);
 	}
 }
 

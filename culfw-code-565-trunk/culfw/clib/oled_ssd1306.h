@@ -50,8 +50,9 @@
 extern int16_t oled_cursor_x, oled_cursor_y;
 extern uint16_t oled_text_color, oled_text_bgcolor;
 extern uint8_t oled_text_size;
+extern uint8_t oled_addr_write;
 
-void i2c_reset(void);
+uint8_t i2c_reset(void);
 void oled_init(void); // init i2c & OLED
 uint8_t oled_command(uint8_t c);
 uint8_t oled_display(void); // show what is in the buffer

@@ -353,7 +353,7 @@ void yun_oled_func(char *in) {
 	// the text (minus the leading command 'O',   convert '_' to ' ')
 	char *str = in + 4;
 	for (uint16_t i=0; str[i]!=0; i++) if (str[i] == '_') str[i] = ' ';
-	oled_command(SSD1306_DISPLAYON);
+	if (oled_command(SSD1306_DISPLAYON) != 0) return;
 	oled_println(s, c, bg, str);
 }
 
