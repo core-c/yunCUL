@@ -51,10 +51,12 @@ extern int16_t oled_cursor_x, oled_cursor_y;
 extern uint16_t oled_text_color, oled_text_bgcolor;
 extern uint8_t oled_text_size;
 extern uint8_t oled_addr_write;
+extern uint8_t oled_enabled;
 
 uint8_t i2c_reset(void);
 void oled_init(void); // init i2c & OLED
 uint8_t oled_command(uint8_t c);
+uint8_t oled_enable(uint8_t c); // c is SSD1306_DISPLAYOFF or SSD1306_DISPLAYON
 uint8_t oled_display(void); // show what is in the buffer
 void oled_cls(void); // clear screen
 void oled_setCursor(int16_t x, int16_t y);
@@ -68,6 +70,7 @@ uint8_t oled_drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uin
 uint8_t oled_write(uint8_t c); // write one character to the screen
 void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *str);
 void oled_scroll(int16_t y); // y<0 = up, y>0 = down.  To scroll all lines up (for the current textsize) use: y=-oled_text_size
+void oled_scrollLine(int16_t s); // scroll up 1 line for fontsize(s)
 void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str); // scroll up a line first, then print text on lowest line..
 
 #endif

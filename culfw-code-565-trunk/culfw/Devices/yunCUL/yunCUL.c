@@ -199,6 +199,15 @@ main(void)
 		my_delay_ms(200);
 	}
 
+	oled_println(4,1,0, "©_UJE");
+
+	for (int j=0; j<20; j++)
+		for (int i=0; i<20; i++) {
+			LED_ON();
+			my_delay_ms(20-j);
+			LED_OFF();
+			my_delay_ms(j);
+		}
 
   wdt_disable();
 #ifdef HAS_16MHZ_CLOCK
@@ -209,7 +218,7 @@ main(void)
 //  LED_ON_DDR  |= _BV( LED_ON_PIN );
 //  LED_ON_PORT |= _BV( LED_ON_PIN );
 
-  led_init();
+  //led_init();
   LED_ON();
 
   spi_init();

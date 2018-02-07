@@ -89,8 +89,5 @@ extern uint8_t led_mode;
 #ifdef HAS_YUN_RELAIS
 extern uint8_t yun_relais_state; // UJE: the relais connected to the yunCUL
 #endif
-#ifdef HAS_YUN_OLED
-extern uint8_t yun_oled_on; // UJE: the OLED connected to the yunCUL
-#endif
 
 #endif
