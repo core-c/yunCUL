@@ -309,7 +309,7 @@ void yun_oled_func(char *in) {
 	if (in[1]=='-' && in[2]=='-') { oled_enable(SSD1306_DISPLAYOFF); return; }
 	if (in[3]==0 || in[4]==0) return; // no B, or no text
 	// font size
-	uint8_t s;
+	uint8_t s, logo = 0;
 	switch(in[1]) {
 		case '1':
 			s = 1;
@@ -322,6 +322,9 @@ void yun_oled_func(char *in) {
 			break;
 		case '4':
 			s = 4;
+			break;
+		case '5':
+			logo = 1; // 5 = print 16x16 Homekit logo, then text..
 			break;
 		default:
 			s = 1;
@@ -354,7 +357,10 @@ void yun_oled_func(char *in) {
 	char *str = in + 4;
 	for (uint16_t i=0; str[i]!=0; i++) if (str[i] == '_') str[i] = ' ';
 	if (oled_enable(SSD1306_DISPLAYON) != 0) return; // if display is off?, turn it on
-	oled_println(s, c, bg, str);
+	if (logo)
+		oled_printlnLogo(logoAppleHomekit, str);
+	else
+		oled_println(s, c, bg, str);
 }
 
 

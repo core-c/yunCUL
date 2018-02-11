@@ -7,7 +7,7 @@
 #include "delay.h"
 
 // Standard ASCII 5x7 font
-const PROGMEM const uint8_t oled_font[] PROGMEM = {
+const uint8_t oled_font[] PROGMEM = {
 	0x00, 0x00, 0x00, 0x00, 0x00,
 	0x3E, 0x5B, 0x4F, 0x5B, 0x3E,
 	0x3E, 0x6B, 0x4F, 0x6B, 0x3E,
@@ -300,6 +300,16 @@ uint8_t oled_buffer[SSD1306_LCDHEIGHT * SSD1306_LCDWIDTH / 8] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
+
+
+
+// 16x16 bitmap logo Apple Homekit
+// That is 2 bytes high, and 16 bytes wide.
+const uint8_t logoAppleHomekit[32] PROGMEM = {
+	0b00000000, 0b10000000, 0b01000000, 0b00100000, 0b00010000, 0b00001000, 0b00000100, 0b00000010, 0b00000010, 0b00000100, 0b00001000, 0b00011100, 0b00000100, 0b01111100, 0b10000000, 0b00000000,
+	0b00000001, 0b00000001, 0b11111111, 0b10000000, 0b10000010, 0b10001001, 0b10000101, 0b10010101, 0b10010101, 0b10000101, 0b10001001, 0b10000010, 0b10000000, 0b11111111, 0b00000001, 0b00000001
 };
 
 
@@ -680,7 +690,24 @@ void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
 	oled_scroll(pixels); // scroll a full lineheight in at once
 	oled_print(0, SSD1306_LCDHEIGHT+pixels, s, c, bg, str); // scroll text into view (instead of empty space)*/
 	oled_scrollLine(s); // faster scroll method
-	oled_print(0, (4-s)*8, s, c, bg, str); // scroll text into view (instead of empty space)
+	oled_print(0, (4-s)*8, s, c, bg, str);
+	oled_display();
+}
+
+
+// scroll up a line first (always fontsize 2), then print logo & text on lowest line..
+void oled_printlnLogo(uint8_t *logo, char *str) {
+	oled_scrollLine(2); // faster scroll method
+	// the 16x16 logo is always on the lowest 2 lines
+	for (uint8_t y=0; y<2; y++) {
+		uint16_t yo = y * SSD1306_LCDWIDTH;
+		uint8_t yl = y * 16;
+		for (uint8_t x=0; x<16; x++)
+			oled_buffer[yo+x] = logo[yl+x];
+	}
+		
+	//
+	oled_print(16, (4-2)*8, 2, 1, 0, str); // logo is 16 pixels wide
 	oled_display();
 }
 

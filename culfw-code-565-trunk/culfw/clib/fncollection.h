@@ -90,4 +90,5 @@ extern uint8_t led_mode;
 extern uint8_t yun_relais_state; // UJE: the relais connected to the yunCUL
 #endif
 
+extern uint8_t *logoAppleHomekit;
 #endif
