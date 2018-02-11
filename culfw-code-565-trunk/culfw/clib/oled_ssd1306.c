@@ -700,14 +700,12 @@ void oled_printlnLogo(uint8_t *logo, char *str) {
 	oled_scrollLine(2); // faster scroll method
 	// the 16x16 logo is always on the lowest 2 lines
 	for (uint8_t y=0; y<2; y++) {
-		uint16_t yo = y * SSD1306_LCDWIDTH;
+		uint16_t yo = (y+2) * SSD1306_LCDWIDTH;
 		uint8_t yl = y * 16;
-		for (uint8_t x=0; x<16; x++)
-			oled_buffer[yo+x] = logo[yl+x];
+		for (uint8_t x=0; x<16; x++) oled_buffer[yo+x] = pgm_read_byte(&logo[yl+x]);
 	}
-		
 	//
-	oled_print(16, (4-2)*8, 2, 1, 0, str); // logo is 16 pixels wide
+	oled_print(16,16, 2, 1,0, str); // logo is 16 pixels wide, text always fontsize 2 white on black
 	oled_display();
 }
 
