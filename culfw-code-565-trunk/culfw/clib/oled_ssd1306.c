@@ -704,14 +704,24 @@ void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
 
 
 // scroll up a line first (always fontsize 2), then print logo & text on lowest line..
-void oled_printlnLogo(uint8_t *logo, char *str) {
+void oled_printlnLogo(uint8_t logoID, char *str) {
 	oled_scrollLine(2); // faster scroll method
 	// the 16x16 logo is always on the lowest 2 lines
 	for (uint8_t y=0; y<2; y++) {
 		uint16_t yo = (y+2) * 8;
 		uint8_t yl = y * 16;
 		for (uint8_t x=0; x<16; x++) {
-			uint8_t col = pgm_read_byte(&logo[yl+x]);
+			uint8_t col;
+			switch(logoID) {
+				case 5:
+					col = pgm_read_byte(&logoAppleHomekit[yl+x]);
+					break;
+				case 6:
+					col = pgm_read_byte(&logoFHEM[yl+x]);
+					break;
+				default:
+					return;
+			}
 			for (uint8_t bit=0; bit<8; bit++) {
 				if (col & 1)
 					oled_drawPixel(x, yo+bit, WHITE);

@@ -310,7 +310,7 @@ void yun_oled_func(char *in) {
 	if (in[3]==0 || in[4]==0) return; // no B, or no text
 	// font size
 	uint8_t s = 2;
-	uint8_t *logo = NULL;
+	uint8_t logo = 0;
 	switch(in[1]) {
 		case '1':
 			s = 1;
@@ -325,10 +325,10 @@ void yun_oled_func(char *in) {
 			s = 4;
 			break;
 		case '5':
-			logo = logoAppleHomekit; // 5 = print 16x16 Homekit logo, then text..
+			logo = 5; // 5 = print 16x16 Homekit logo, then text..
 			break;
 		case '6':
-			logo = logoFHEM; // 6 = print 16x16 FHEM logo, then text..
+			logo = 6; // 6 = print 16x16 FHEM logo, then text..
 			break;
 		default:
 			s = 1;

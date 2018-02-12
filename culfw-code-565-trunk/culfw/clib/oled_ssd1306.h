@@ -72,6 +72,6 @@ void oled_print(int16_t x, int16_t y, uint8_t s, uint16_t c, uint16_t bg, char *
 void oled_scroll(int16_t y); // y<0 = up, y>0 = down.  To scroll all lines up (for the current textsize) use: y=-oled_text_size
 void oled_scrollLine(int16_t s); // scroll up 1 line for fontsize(s)
 void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str); // scroll up a line first, then print text on lowest line..
-void oled_printlnLogo(uint8_t *logo, char *str); // scroll up a line first (always fontsize 2), then print logo & text on lowest line..
+void oled_printlnLogo(uint8_t logoID, char *str); // scroll up a line first (always fontsize 2), then print logo & text on lowest line..
 
 #endif
