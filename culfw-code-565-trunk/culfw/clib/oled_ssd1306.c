@@ -312,6 +312,11 @@ const uint8_t logoAppleHomekit[32] PROGMEM = {
 	0b00000001, 0b00000001, 0b11111111, 0b10000000, 0b10000010, 0b10001001, 0b10000101, 0b10010101, 0b10010101, 0b10000101, 0b10001001, 0b10000010, 0b10000000, 0b11111111, 0b00000001, 0b00000001
 };
 
+const uint8_t logoFHEM[32] PROGMEM = {
+	0b00110000, 0b11110000, 0b11111000, 0b00011000, 0b00001100, 0b01001100, 0b01001110, 0b00000110, 0b00000110, 0b11000110, 0b10001100, 0b00011000, 0b00110000, 0b11110000, 0b11100000, 0b11000000,
+	0b00110000, 0b01111111, 0b00000000, 0b01000000, 0b01000000, 0b01001110, 0b11001000, 0b11011000, 0b11010000, 0b11010000, 0b11011000, 0b10001100, 0b10000000, 0b11111000, 0b01111111, 0b00000000
+};
+
 
 int16_t oled_cursor_x, oled_cursor_y;
 uint16_t oled_text_color, oled_text_bgcolor;
@@ -659,9 +664,6 @@ void oled_scroll(int16_t y) {
 		oled_buffer[r1++] = (col >> 8) & 0xFF;
 		oled_buffer[r0++] = col & 0xFF;
 	}
-	
-	
-	
 }
 
 
@@ -679,16 +681,22 @@ void oled_scrollLine(int16_t s) {
 }
 
 
-// scroll softly
+// scroll and print a line of text
 void oled_println(uint8_t s, uint16_t c, uint16_t bg, char *str) {
-/*	for (uint8_t pixel=0; pixel<s*8; pixel++) {
+/*
+	// (pixel)scroll softly
+	for (uint8_t pixel=0; pixel<s*8; pixel++) {
 		oled_scroll(-1); // softest
 		oled_print(0, SSD1306_LCDHEIGHT-pixel, s, c, bg, str); // scroll text into view (instead of empty space)
 		oled_display();
-	}*/
-/*	int8_t pixels = -s * 8;
+	}
+*/
+/*	// (pixel)scroll a line at once
+	int8_t pixels = -s * 8;
 	oled_scroll(pixels); // scroll a full lineheight in at once
-	oled_print(0, SSD1306_LCDHEIGHT+pixels, s, c, bg, str); // scroll text into view (instead of empty space)*/
+	oled_print(0, SSD1306_LCDHEIGHT+pixels, s, c, bg, str); // scroll text into view (instead of empty space)
+*/
+	// (line)scroll
 	oled_scrollLine(s); // faster scroll method
 	oled_print(0, (4-s)*8, s, c, bg, str);
 	oled_display();
@@ -700,11 +708,20 @@ void oled_printlnLogo(uint8_t *logo, char *str) {
 	oled_scrollLine(2); // faster scroll method
 	// the 16x16 logo is always on the lowest 2 lines
 	for (uint8_t y=0; y<2; y++) {
-		uint16_t yo = (y+2) * SSD1306_LCDWIDTH;
+		uint16_t yo = (y+2) * 8;
 		uint8_t yl = y * 16;
-		for (uint8_t x=0; x<16; x++) oled_buffer[yo+x] = pgm_read_byte(&logo[yl+x]);
+		for (uint8_t x=0; x<16; x++) {
+			uint8_t col = pgm_read_byte(&logo[yl+x]);
+			for (uint8_t bit=0; bit<8; bit++) {
+				if (col & 1)
+					oled_drawPixel(x, yo+bit, WHITE);
+				else
+					oled_drawPixel(x, yo+bit, BLACK);
+				col >>= 1;
+			}
+		}
 	}
-	//
+	// print the text
 	oled_print(16,16, 2, 1,0, str); // logo is 16 pixels wide, text always fontsize 2 white on black
 	oled_display();
 }
