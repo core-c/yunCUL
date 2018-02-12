@@ -309,7 +309,7 @@ void yun_oled_func(char *in) {
 	if (in[1]=='-' && in[2]=='-') { oled_enable(SSD1306_DISPLAYOFF); return; }
 	if (in[3]==0 || in[4]==0) return; // no B, or no text
 	// font size
-	uint8_t s;
+	uint8_t s = 2;
 	uint8_t *logo = NULL;
 	switch(in[1]) {
 		case '1':
