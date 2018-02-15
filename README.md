@@ -63,11 +63,11 @@ To use an Uno as a programmer, you have to:
 - Connect the ISCP header of the Yún to the Uno, as explained on this website:
  [ Arduino as your programmer](https://learn.sparkfun.com/tutorials/installing-an-arduino-bootloader)
 - The Uno's COM-port is visible to host computer (whatever system you are using, the Uno-programmer will appear on _some_ COM-port).
- avr-dude commandline argument: *** -PCOM7 ***
+ avr-dude commandline argument: ***-PCOM7***
 - The Uno acts as an STK500 programmer.
- avr-dude commandline argument: *** -cstk500v1 ***
+ avr-dude commandline argument: ***-cstk500v1***
 - You are programming the Yún, so select that MCU to flash.
- avr-dude commandline argument *** -patmega32u4 ***
+ avr-dude commandline argument ***-patmega32u4***
 
 
 ####Links
