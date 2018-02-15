@@ -13,6 +13,9 @@ culfw for Arduino Yún.
 - Added code for a new device ***yunCUL*** to ***culfw-code-565-trunk/culfw/Devices/***
 - Adjusted ***culfw-code-565-trunk/culfw/clib/rf_send.h*** to get rid of the "not enough credits" bug
 - Adjusted ***culfw-code-565-trunk/culfw/clib/serial.c*** to use the Yún's _Serial1_ hardware COM-port instead of _Serial_
+- Adjusted ***culfw-code-565-trunk/culfw/clib/twimaster.c*** to initialize the I²C at 400 KHz instead of 100 KHz
+- Adjusted ***culfw-code-565-trunk/culfw/clib/fncollection.h*** & ***fncollection.c*** to add support for OLED & yunCUL relais
+- Added ***culfw-code-565-trunk/culfw/clib/oled_ssd1306.h*** & ***oled_ssd1306.c*** with the OLED code
 
 
 ####Compiling the code
@@ -52,7 +55,19 @@ Here is an example using an Arduino Uno as ISP, to program the Yún:
         avrdude -CC:\Users\C\AppData\Local\Arduino15\packages\arduino\tools\avrdude\6.3.0-arduino9/etc/avrdude.conf -v -patmega32u4 -cstk500v1 -PCOM7 -b19200 -Uflash:w:yunCUL.hex:i -Ulock:w:0x2F:m
 
 ```
-
+For our latest yunCUL AVR software we chose to use the full flash memory-range. This means that there is no longer a bootloader.
+Because of the lack of a bootloader, the Yún will not report itself on a COM-port when connected with a USB-cable. The bootloader handles the COM-port connection, but it is absent.
+This makes the yunCUL more hidden for the people who don't know what they're doing. At the same time it makes flashing the software into the yunCUL a bit less easy. You have to program the yunCUL using a programming-device. We used an Arduino Uno to flash the yunCUL.
+To use an Uno as a programmer, you have to:
+- Flash the Uno with the Arduino sketch ***YunSerialTerminal***
+- Connect the ISCP header of the Yún to the Uno, as explained on this website:
+ [ Arduino as your programmer](https://learn.sparkfun.com/tutorials/installing-an-arduino-bootloader)
+- The Uno's COM-port is visible to host computer (whatever system you are using, the Uno-programmer will appear on _some_ COM-port).
+ avr-dude commandline argument: *** -PCOM7 ***
+- The Uno acts as an STK500 programmer.
+ avr-dude commandline argument: *** -cstk500v1 ***
+- You are programming the Yún, so select that MCU to flash.
+ avr-dude commandline argument *** -patmega32u4 ***
 
 
 ####Links
