@@ -92,4 +92,6 @@ extern uint8_t yun_relais_state; // UJE: the relais connected to the yunCUL
 
 extern uint8_t *logoAppleHomekit;
 extern uint8_t *logoFHEM;
+extern uint8_t *logoHeaterOn;
+extern uint8_t *logoHeaterOff;
 #endif

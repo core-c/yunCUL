@@ -330,6 +330,12 @@ void yun_oled_func(char *in) {
 		case '6':
 			logo = 6; // 6 = print 16x16 FHEM logo, then text..
 			break;
+		case '7':
+			logo = 7; // 7 = print 16x16 Heater OFF logo, then text..
+			break;
+		case '8':
+			logo = 8; // 8 = print 16x16 Heater ON logo, then text..
+			break;
 		default:
 			s = 1;
 	}
