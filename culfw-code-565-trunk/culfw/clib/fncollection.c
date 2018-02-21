@@ -331,38 +331,13 @@ void yun_oled_func(char *in) {
 			logo = 6; // 6 = print 16x16 FHEM logo, then text..
 			break;
 		case '7':
-			logo = 7; // 7 = print 16x16 Heater OFF logo, then text..
+			logo = 7; // 7 = print 16x16 Heater logo, then text..
 			break;
-		case '8':
-			logo = 8; // 8 = print 16x16 Heater ON logo, then text..
-			break;
-		default:
-			s = 1;
 	}
 	// foreground color
-	uint16_t c;
-	switch(in[2]) {
-		case '0':
-			c = BLACK;
-			break;
-		case '1':
-			c = WHITE;
-			break;
-		default:
-			c = WHITE;
-	}
+	uint16_t c = (in[2] == '1')? WHITE : BLACK;
 	// background color
-	uint16_t bg = BLACK;
-	switch(in[3]) {
-		case '0':
-			bg = BLACK;
-			break;
-		case '1':
-			bg = WHITE;
-			break;
-		default:
-			bg = BLACK;
-	}
+	uint16_t bg = (in[3] == '0')? BLACK : WHITE;
 	// the text (minus the leading command 'Osfb',   convert '_' to ' ')
 	char *str = in + 4;
 	for (uint16_t i=0; str[i]!=0; i++) if (str[i] == '_') str[i] = ' ';

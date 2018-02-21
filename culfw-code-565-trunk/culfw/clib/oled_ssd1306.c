@@ -317,16 +317,16 @@ const uint8_t logoFHEM[32] PROGMEM = {
 	0b00110000, 0b01111111, 0b00000000, 0b01000000, 0b01000000, 0b01001110, 0b11001000, 0b11011000, 0b11010000, 0b11010000, 0b11011000, 0b10001100, 0b10000000, 0b11111000, 0b01111111, 0b00000000
 };
 
-const uint8_t logoHeaterOn[32] PROGMEM = {
+const uint8_t logoHeater[32] PROGMEM = {
 	0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b10000000, 0b11100000, 0b11100000, 0b11110000, 0b11111110, 0b11111110, 0b11111100, 0b11111000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
 	0b00000000, 0b00000000, 0b11000000, 0b11000000, 0b11000011, 0b11000111, 0b11001111, 0b11011111, 0b11011111, 0b11000011, 0b11000001, 0b11000000, 0b11000000, 0b11000000, 0b00000000, 0b00000000
 };
-
+/*
 const uint8_t logoHeaterOff[32] PROGMEM = {
 	0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
 	0b00000000, 0b00000000, 0b11000000, 0b11000000, 0b11000000, 0b11000000, 0b11000000, 0b11011000, 0b11011100, 0b11000000, 0b11000000, 0b11000000, 0b11000000, 0b11000000, 0b00000000, 0b00000000
 };
-
+*/
 
 int16_t oled_cursor_x, oled_cursor_y;
 uint16_t oled_text_color, oled_text_bgcolor;
@@ -338,6 +338,7 @@ uint8_t oled_enabled;
 uint8_t i2c_reset(void) {
 	TWCR &= ~(_BV(TWEN)); //Disable the Atmel 2-Wire interface so we can control the SDA and SCL pins directly
 	TWCR |= _BV(TWINT); // "the TWINT bit should be cleared (by writing it to one)"
+/*
 	// SCL & SDA as input with pull-ups enabled
 	DDRD &= ~0x01; // clear bit 0. set as input
 	PORTD |= 0x01; // SCL on AVR pin D0
@@ -382,6 +383,7 @@ uint8_t i2c_reset(void) {
 	my_delay_us(20);
 	DDRD &= ~0x02; // and reset pins as tri-state inputs which is the default state on reset
 	DDRD &= ~0x01; // scl too
+*/
 	// the bus has been cleared..
 	i2c_init();
 	return 0;
@@ -730,10 +732,7 @@ void oled_printlnLogo(uint8_t logoID, char *str) {
 					col = pgm_read_byte(&logoFHEM[yl+x]);
 					break;
 				case 7:
-					col = pgm_read_byte(&logoHeaterOff[yl+x]);
-					break;
-				case 8:
-					col = pgm_read_byte(&logoHeaterOn[yl+x]);
+					col = pgm_read_byte(&logoHeater[yl+x]);
 					break;
 				default:
 					return;

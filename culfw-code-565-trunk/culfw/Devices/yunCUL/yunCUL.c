@@ -158,6 +158,14 @@ const PROGMEM t_fntab fntab[] = {
 int
 main(void)
 {
+	// wait for u-boot to finish..
+	// On an Arduino Yun this will last about 1.5 minute (90 seconds)
+	// To be on the safe side, we wait 120 seconds.. (that makes 600 loop-cycles).
+	// ^^That's the old method.
+	// Now we blink the LED for just a second, and continue the program (while Linux is still booting).
+	// Once Linux has finished booting, it resets the AVR (using the script: reset-mcu).
+	// The LED will blink again (for a second), program continues,
+	// .. but this time, the serial connection (AVR<->Linux) will be opened succesfully, and the program works.
 
 	my_delay_ms(250);
 	my_delay_ms(250);
@@ -183,14 +191,9 @@ main(void)
 	oled_init();
 #endif
 
-	// wait for u-boot to finish..
-	// On an Arduino Yun this will last about 1.5 minute (90 seconds)
-	// To be on the safe side, we wait 120 seconds.. (that makes 600 loop-cycles).
-	// ^^That's the old method.
-	// Now we blink the LED for just a second, and continue the program (while Linux is still booting).
-	// Once Linux has finished booting, it resets the AVR (using the script: reset-mcu).
-	// The LED will blink again (for a second), program continues,
-	// .. but this time, the serial connection (AVR<->Linux) will be opened succesfully, and the program works.
+	my_delay_ms(250);
+	my_delay_ms(250);
+	
 //	led_init();
 	for (int i=0; i<15; i++) { // 3 sec  600
 		LED_ON();
@@ -199,7 +202,7 @@ main(void)
 		my_delay_ms(200);
 	}
 
-	oled_println(4,1,0, "©_UJE");
+	oled_println(4,1,0, "_UJE_");
 
 	for (int j=0; j<20; j++)
 		for (int i=0; i<20; i++) {
