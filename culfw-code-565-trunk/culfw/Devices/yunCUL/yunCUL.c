@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+// UJE yunCUL specific details
 #include "board.h"
 
 #include "spi.h"
@@ -45,7 +46,9 @@
 #include "memory.h"
 
 // UJE: OLED
+#ifdef HAS_YUN_OLED
 #include "oled_ssd1306.h"
+#endif
 
 #ifdef HAS_ASKSIN
 #include "rf_asksin.h"
@@ -125,7 +128,9 @@ const PROGMEM t_fntab fntab[] = {
 #ifdef HAS_RFNATIVE
   { 'N', native_func },
 #endif
+#ifdef HAS_YUN_OLED
   { 'O', yun_oled_func },
+#endif
   { 'R', read_eeprom },
 #ifdef HAS_YUN_RELAIS
   { 'S', yun_relais_func },
@@ -202,7 +207,7 @@ main(void)
 		my_delay_ms(200);
 	}
 
-	oled_println(4,1,0, "_UJE_");
+	oled_println(4,1,0, "UJE");
 
 	for (int j=0; j<20; j++)
 		for (int i=0; i<20; i++) {

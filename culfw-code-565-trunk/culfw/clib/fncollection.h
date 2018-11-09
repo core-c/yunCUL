@@ -10,18 +10,23 @@ uint8_t erb(uint8_t *p);
 void dumpmem(uint8_t *addr, uint16_t len);
 
 void ledfunc(char *);
+
 #ifdef HAS_YUN_RELAIS
 void yun_relais_func(char *); // UJE: the relais connected to the yunCUL
 #endif
+
 #ifdef HAS_YUN_OLED
 void yun_oled_func(char *); // UJE: the OLED 128x32 connected to the yunCUL
 #endif
+
 void prepare_boot(char *);
 void version(char *);
 void do_wdt_enable(uint8_t t);
 
-// Already used magics: c1,c2
 
+// EEPROM memory locations for data.
+
+// Already used magics: c1,c2
 #define EE_MAGIC_OFFSET      (uint8_t *)0                       // 2 bytes
 
 #define EE_CC1100_CFG        (EE_MAGIC_OFFSET+2)                // Offset:  2
@@ -32,7 +37,6 @@ void do_wdt_enable(uint8_t t);
 #define EE_REQBL             (EE_CC1100_PA+EE_CC1100_PA_SIZE)
 #define EE_LED               (EE_REQBL+1)
 #define EE_FHTID             (EE_LED+1)
-
 #define EE_FASTRF_CFG        (EE_FHTID+2)                       // Offset: 55:37
 #define EE_RF_ROUTER_ID      (EE_FASTRF_CFG+EE_CC1100_CFG_SIZE)
 #define EE_RF_ROUTER_ROUTER  (EE_RF_ROUTER_ID+1) 
@@ -86,12 +90,15 @@ void do_wdt_enable(uint8_t t);
 #endif
 
 extern uint8_t led_mode;
+
 #ifdef HAS_YUN_RELAIS
 extern uint8_t yun_relais_state; // UJE: the relais connected to the yunCUL
 #endif
 
+#ifdef HAS_YUN_OLED
 extern uint8_t *logoAppleHomekit;
 extern uint8_t *logoFHEM;
 extern uint8_t *logoHeater;
+#endif
 
 #endif
