@@ -172,7 +172,7 @@ extern const uint8_t mark433_pin;
 #define YUN_RELAIS_OFF( )		YUN_RELAIS_PORT &= ~_BV(YUN_RELAIS_PIN)
 
 
-// UJE: the OLED 128x32 connected to the yunCUL. on the I2C bus (pins D0 & D1)
+// UJE: the OLED 128x32 connected to the yunCUL. on the I2C bus (AVR pins PD0 & PD1) (Arduino Yun pins 3 & 2)
 #define HAS_YUN_OLED
 
 
